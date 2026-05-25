@@ -45,7 +45,14 @@ def hard_split(text: str, limit: int = SAFE_LIMIT) -> list[str]:
 def post(webhook: str, content: str) -> int:
     data = json.dumps({"content": content}).encode("utf-8")
     req = urllib.request.Request(
-        webhook, data=data, headers={"Content-Type": "application/json"}, method="POST"
+        webhook,
+        data=data,
+        headers={
+            "Content-Type": "application/json",
+            # Discord's Cloudflare blocks the default Python-urllib UA with a 403.
+            "User-Agent": "ai-news-agent/1.0 (+https://github.com/raybanss/ai-news-agent)",
+        },
+        method="POST",
     )
     with urllib.request.urlopen(req, timeout=30) as resp:
         return resp.status
